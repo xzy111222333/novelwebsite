@@ -9,10 +9,16 @@ export default function App() {
         <p>
           前端基于 React + Vite，后端基于 FastAPI + SQLAlchemy，实现更清晰的职责划分和更好的可扩展性。
         </p>
+        <p className="meta">
+          提示：原项目的完整 UI 仍在仓库根目录的 Next.js（默认端口 3000），现在也已对接 FastAPI。
+        </p>
         <nav className="actions">
           <Link to="/login" className="btn primary">
             登录
           </Link>
+          <a className="btn" href="http://localhost:3000" target="_blank" rel="noreferrer">
+            打开原版完整UI
+          </a>
           <a className="btn" href="/yaoqiu.md" target="_blank" rel="noreferrer">
             查看大作业要求
           </a>

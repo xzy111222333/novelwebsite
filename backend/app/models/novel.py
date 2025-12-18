@@ -25,3 +25,4 @@ class Novel(Base):
     chapters = relationship("Chapter", back_populates="novel", cascade="all, delete")
     outlines = relationship("Outline", back_populates="novel", cascade="all, delete")
     characters = relationship("Character", back_populates="novel", cascade="all, delete")
+    world_building = relationship("WorldBuilding", back_populates="novel", cascade="all, delete", uselist=False)

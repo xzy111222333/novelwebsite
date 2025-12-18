@@ -3,6 +3,7 @@ from .novel import Novel
 from .chapter import Chapter
 from .character import Character
 from .outline import Outline
+from .world_building import WorldBuilding
 
 __all__ = [
     "User",
@@ -10,4 +11,5 @@ __all__ = [
     "Chapter",
     "Character",
     "Outline",
+    "WorldBuilding",
 ]

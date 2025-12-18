@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./pages/App";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Novel from "./pages/Novel";
 import "./styles/global.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -13,6 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/novels/:novelId" element={<Novel />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

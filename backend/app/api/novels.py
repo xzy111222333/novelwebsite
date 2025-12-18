@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 
 from .. import schemas
 from ..api import deps
-from ..models import Novel
 from ..services import create_novel, delete_novel, get_novel, list_novels, update_novel
 
 router = APIRouter(prefix="/novels", tags=["novels"])

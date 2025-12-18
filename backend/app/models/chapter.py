@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
+from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 
 from ..database import Base
@@ -10,8 +10,8 @@ class Chapter(Base):
 
     id = Column(String(36), primary_key=True, index=True)
     title = Column(String(255), nullable=False)
-    content = Column(String, nullable=False)
-    summary = Column(String, nullable=True)
+    content = Column(Text, nullable=False)
+    summary = Column(Text, nullable=True)
     word_count = Column(Integer, default=0)
     order = Column(Integer, default=0)
     status = Column(String(50), default="draft")

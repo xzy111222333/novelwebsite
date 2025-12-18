@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { createNovel, listNovels, Novel } from "../services/novel";
 import { fetchProfile } from "../services/auth";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [novels, setNovels] = useState<Novel[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -16,8 +18,8 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    loadData().catch(() => setUserName(""));
-  }, []);
+    loadData().catch(() => navigate("/login"));
+  }, [navigate]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +58,11 @@ export default function Dashboard() {
             <h3>{novel.title}</h3>
             <p>{novel.description || "暂无简介"}</p>
             <p className="meta">状态：{novel.status}</p>
+            <div className="actions">
+              <Link to={`/novels/${novel.id}`} className="btn">
+                打开编辑器
+              </Link>
+            </div>
           </article>
         ))}
         {novels.length === 0 && <p className="notice">暂无数据，先创建一条吧。</p>}

@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
+from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 
 from ..database import Base
@@ -10,8 +10,8 @@ class Outline(Base):
 
     id = Column(String(36), primary_key=True, index=True)
     title = Column(String(255), nullable=False)
-    content = Column(String, nullable=True)
-    chapter_range = Column(String, nullable=True)
+    content = Column(Text, nullable=True)
+    chapter_range = Column(String(255), nullable=True)
     order = Column(Integer, default=0)
     novel_id = Column(String(36), ForeignKey("novels.id", ondelete="CASCADE"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)

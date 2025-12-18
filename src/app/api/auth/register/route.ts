@@ -1,7 +1,6 @@
 // src/app/api/auth/register/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import bcrypt from 'bcryptjs'
+import { fastapiFetch } from '@/lib/fastapi'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,39 +23,26 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 检查用户是否已存在
-    const existingUser = await db.user.findUnique({
-      where: { email: email.toLowerCase().trim() }
+    const res = await fastapiFetch("/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name.trim(),
+        email: email.toLowerCase().trim(),
+        password,
+      }),
     })
 
-    if (existingUser) {
+    const data = await res.json().catch(() => ({}))
+
+    if (!res.ok) {
       return NextResponse.json(
-        { error: '该邮箱已被注册' },
-        { status: 400 }
+        { error: data?.detail || data?.error || "注册失败，请稍后重试" },
+        { status: res.status }
       )
     }
 
-    // 加密密码
-    const hashedPassword = await bcrypt.hash(password, 12)
-
-    // 创建用户
-    const user = await db.user.create({
-      data: {
-        name: name.trim(),
-        email: email.toLowerCase().trim(),
-        password: hashedPassword,
-      }
-    })
-
-    console.log('用户创建成功:', user.id)
-
-    // 不返回密码
-    const { password: _, ...userWithoutPassword } = user
-
-    return NextResponse.json({
-      success: true,
-      user: userWithoutPassword
-    })
+    return NextResponse.json({ success: true, user: data })
 
   } catch (error) {
     console.error('注册失败:', error)

@@ -2,16 +2,32 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "./auth"
 
+export class AuthError extends Error {
+  statusCode = 401
+  constructor(message = "未授权访问") {
+    super(message)
+    this.name = "AuthError"
+  }
+}
+
+export function isAuthError(error: unknown): error is AuthError {
+  return error instanceof AuthError
+}
+
 export async function getCurrentUser() {
   const session = await getServerSession(authOptions)
-  return session?.user as { id: string; email: string; name?: string } | undefined
+  if (!session?.user) return undefined
+  return {
+    ...session.user,
+    accessToken: session.accessToken,
+  } as { id: string; email: string; name?: string; accessToken?: string }
 }
 
 export async function requireAuth() {
   const user = await getCurrentUser()
   
-  if (!user) {
-    throw new Error("未授权访问")
+  if (!user || !user.accessToken) {
+    throw new AuthError()
   }
   
   return user

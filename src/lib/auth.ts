@@ -1,8 +1,7 @@
 // lib/auth.ts
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { db } from "./db"
-import bcrypt from "bcryptjs"
+import { fastapiFetch } from "./fastapi"
 
 // 扩展 NextAuth 类型
 declare module "next-auth" {
@@ -11,20 +10,26 @@ declare module "next-auth" {
     email: string
     name?: string | null
     avatar?: string | null
+    accessToken?: string
   }
 
   interface Session {
     user: User
+    accessToken?: string
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     uid: string
+    accessToken?: string
   }
 }
 
 export const authOptions: NextAuthOptions = {
+  secret:
+    process.env.NEXTAUTH_SECRET ??
+    (process.env.NODE_ENV === "development" ? "dev-nextauth-secret-change-me" : undefined),
   session: {
     strategy: "jwt",
   },
@@ -42,34 +47,44 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const user = await db.user.findUnique({
-            where: {
-              email: credentials.email.toLowerCase().trim()
-            }
+          const form = new URLSearchParams()
+          form.set("username", credentials.email.toLowerCase().trim())
+          form.set("password", credentials.password)
+
+          const loginRes = await fastapiFetch("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: form,
           })
 
-          if (!user) {
-            throw new Error("用户不存在")
+          if (!loginRes.ok) {
+            throw new Error("邮箱或密码错误")
           }
 
-          if (!user.password) {
-            throw new Error("密码错误")
+          const loginData = (await loginRes.json()) as { access_token: string }
+          const accessToken = loginData.access_token
+
+          const meRes = await fastapiFetch("/auth/me", {
+            method: "GET",
+            accessToken,
+          })
+          if (!meRes.ok) {
+            throw new Error("登录失败")
           }
 
-          const isPasswordValid = await bcrypt.compare(
-            credentials.password,
-            user.password
-          )
-
-          if (!isPasswordValid) {
-            throw new Error("密码错误")
+          const me = (await meRes.json()) as {
+            id: string
+            email: string
+            name?: string | null
+            avatar?: string | null
           }
 
           return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            avatar: user.avatar,
+            id: me.id,
+            email: me.email,
+            name: me.name ?? null,
+            avatar: me.avatar ?? null,
+            accessToken,
           }
         } catch (error) {
           console.error("认证错误:", error)
@@ -83,11 +98,13 @@ export const authOptions: NextAuthOptions = {
       if (session?.user && token.sub) {
         session.user.id = token.sub
       }
+      session.accessToken = token.accessToken
       return session
     },
     jwt: async ({ user, token }) => {
       if (user) {
         token.uid = user.id
+        token.accessToken = (user as any).accessToken
       }
       return token
     },
