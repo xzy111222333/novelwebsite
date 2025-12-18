@@ -44,3 +44,12 @@ npm run dev
 
 ![工作台](https://youke1.picui.cn/s1/2025/10/14/68ed2229723f6.png)
 # novelwebsite
+
+## 前后端分离版本
+
+- 新增 `backend/`：FastAPI + SQLAlchemy + JWT，支持用户注册/登录以及基于用户的小说 CRUD。
+- 新增 `frontend/`：React + Vite 最小示例，提供登录与工作台页面，可与后端 REST API 直接交互。
+
+使用方式：
+1. `pip install -r backend/requirements.txt` 后运行 `uvicorn app.main:app --reload --app-dir backend`。
+2. 进入 `frontend/`，执行 `npm install && npm run dev`，默认会请求 `http://localhost:8000`。如需修改，设置 `VITE_API_URL`。
