@@ -1,0 +1,134 @@
+// prisma/schema.prisma
+// 删除所有内容，只保留这个版本
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// prisma/schema.prisma
+model Novel {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  genre       String?
+  status      String   @default("draft")
+  coverImage  String?
+  tags        String?
+  wordCount   Int      @default(0)
+  chapterCount Int     @default(0)
+  userId      String?  // 改为可选字段
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  worldBuilding WorldBuilding?
+  characters  Character[]
+  chapters    Chapter[]
+  outlines    Outline[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 其他模型保持不变...
+
+model Chapter {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  summary     String?
+  wordCount   Int
+  order       Int
+  status      String   @default("draft")
+  novelId     String
+  novel       Novel    @relation(fields: [novelId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Character {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  avatar      String?
+  personality String?
+  background  String?
+  relationships String?
+  novelId     String
+  novel       Novel    @relation(fields: [novelId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model WorldBuilding {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  type        String
+  novelId     String   @unique
+  novel       Novel    @relation(fields: [novelId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Outline {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  chapterRange String?
+  order       Int
+  novelId     String
+  novel       Novel    @relation(fields: [novelId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  avatar        String?
+  password      String?
+  emailVerified DateTime?
+  accounts      Account[]
+  sessions      Session[]
+  novels        Novel[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
