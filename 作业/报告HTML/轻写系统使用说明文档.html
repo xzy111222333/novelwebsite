@@ -86,7 +86,7 @@
     <tbody>
       <tr><td>Node.js</td><td>18+</td><td>运行前端（Next.js）</td></tr>
       <tr><td>Python</td><td>3.10+</td><td>运行后端（FastAPI）</td></tr>
-      <tr><td>MySQL</td><td>8.0（可选）</td><td>生产数据库（默认可用 SQLite 替代）</td></tr>
+      <tr><td>MySQL</td><td>8.0</td><td>数据库（系统使用）</td></tr>
     </tbody>
   </table>
 
@@ -98,7 +98,7 @@
 
   <h2>三、本地运行（Windows 环境示例）</h2>
   <p>
-    本节按“先后端、再前端”的顺序说明。首次运行时建议使用 SQLite 模式，以减少环境依赖；功能验证通过后再切换 MySQL。
+    本节按“先后端、再前端”的顺序说明，数据库统一使用 MySQL。
   </p>
   <div class="callout">
     建议做法：使用 Python 虚拟环境（venv）隔离依赖，避免与系统全局 Python 包冲突。若使用 PowerShell 激活 venv 失败，可改用 CMD 或调整执行策略。
@@ -139,16 +139,10 @@ NEXTAUTH_SECRET=please-change-me</code></pre>
   <pre><code>npm run dev</code></pre>
   <p>访问：<code>http://localhost:3000</code>。</p>
 
-  <h3>3. 数据库模式说明（SQLite 与 MySQL）</h3>
-  <h4>3.1 SQLite（默认，推荐验收演示快速模式）</h4>
+  <h3>3. 数据库配置（MySQL）</h3>
+  <h4>3.1 MySQL 配置</h4>
   <p>
-    后端默认使用 SQLite，启动后会在 <code>backend/app.db</code> 生成数据库文件，并自动创建数据表。
-    该模式无需安装 MySQL，适合快速验收和演示。
-  </p>
-
-  <h4>3.2 MySQL（可选，生产模式）</h4>
-  <p>
-    若要使用 MySQL，需要先创建数据库与用户，并在后端配置 <code>backend/.env</code> 中的 <code>DATABASE_URL</code>。
+    本系统使用 MySQL 存储用户、作品、章节与设定数据。需要先创建数据库与用户，并在后端配置 <code>backend/.env</code> 中的 <code>DATABASE_URL</code>。
   </p>
   <p>（1）创建数据库（示例）</p>
   <pre><code>-- 登录 MySQL 后执行
@@ -165,13 +159,13 @@ ACCESS_TOKEN_EXPIRE_MINUTES=1440</code></pre>
   <div class="note">
     若连接报错，请优先检查：MySQL 是否启动、端口是否为 3306、账号密码是否正确、数据库是否存在、是否安装 PyMySQL 依赖。
   </div>
-  <h4>3.3 MySQL 安装与连接检查（补充说明）</h4>
+  <h4>3.2 MySQL 安装与连接检查（补充说明）</h4>
   <p>
     Windows 下建议使用 MySQL Installer 安装 MySQL 8.0，并在安装过程中设置 root 密码与默认端口（3306）。
     安装完成后可通过“服务”确认 MySQL 服务已启动，或在命令行执行 <code>mysql -u root -p</code> 进入控制台验证连接。
     如出现连接被拒绝，请检查防火墙、端口占用与账号权限。
   </p>
-  <h4>3.4 数据库备份（可选，模仿老师示例）</h4>
+  <h4>3.3 数据库备份（可选，模仿老师示例）</h4>
   <p>
     若后续需要将数据库备份到另一台机器或做验收备份，可使用 <code>mysqldump</code> 导出。注意在 Windows 下需要进入 MySQL 安装目录的 <code>bin</code> 目录执行。
   </p>
@@ -300,7 +294,7 @@ pm2 status</code></pre>
   </p>
   <h3>2. 后端 500 或数据库连接失败</h3>
   <p>
-    若使用 MySQL，请检查 <code>DATABASE_URL</code>、端口、账号权限与字符集；若只需快速运行，建议先切回 SQLite 模式验证整体流程。
+    请检查 <code>DATABASE_URL</code>、端口、账号权限与字符集；同时确认数据库 <code>aiwrite_db</code> 已创建且账号具备建表/读写权限。
   </p>
   <h3>3. AI 接口不可用</h3>
   <p>

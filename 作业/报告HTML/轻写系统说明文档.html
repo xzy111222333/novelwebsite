@@ -125,7 +125,7 @@
   </p>
   <div class="callout">
     <strong>架构图（建议截图或绘图后替换）：</strong><br />
-    浏览器（前端） → HTTP/JSON → FastAPI（后端） → SQLAlchemy → MySQL/SQLite<br />
+    浏览器（前端） → HTTP/JSON → FastAPI（后端） → SQLAlchemy → MySQL<br />
     FastAPI（AI 模块） → HTTP → 豆包大模型 API
   </div>
   <h3>3.2 模块划分</h3>
@@ -148,8 +148,7 @@
   </p>
   <h3>4.3 数据库选型</h3>
   <p>
-    数据库存储采用 MySQL（utf8mb4），满足中文内容与长文本存储需求；在开发调试阶段可以使用 SQLite，
-    以降低环境依赖，方便快速验证功能。两者在 ORM 层保持一致接口，减少切换成本。
+    数据库存储采用 MySQL（utf8mb4），满足中文内容与长文本存储需求，并能很好地支持多表关联与后续扩展。
   </p>
 
   <h2 id="s5">5. 数据库设计</h2>
@@ -401,7 +400,7 @@ src/           # 前端主要页面与组件（Next.js）
 public/        # 静态资源</code></pre>
   <h3>10.2 环境变量说明</h3>
   <p>后端（backend/.env）：</p>
-  <pre><code>DATABASE_URL=...        # MySQL 连接串（可选，不填则用 SQLite）
+  <pre><code>DATABASE_URL=...        # MySQL 连接串
 SECRET_KEY=...          # JWT 密钥
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
 DOUBAO_API_KEY=...      # AI Key（可选）</code></pre>
@@ -421,7 +420,7 @@ NEXTAUTH_SECRET=please-change-me</code></pre>
       <tr><td>认证</td><td>NextAuth</td><td>会话管理与登录流程</td></tr>
       <tr><td>后端</td><td>FastAPI</td><td>REST API 服务</td></tr>
       <tr><td>数据层</td><td>SQLAlchemy / Pydantic</td><td>ORM 建模与数据校验</td></tr>
-      <tr><td>数据库</td><td>PyMySQL / SQLite</td><td>MySQL/SQLite 驱动与快速运行模式</td></tr>
+      <tr><td>数据库</td><td>PyMySQL</td><td>MySQL 驱动</td></tr>
       <tr><td>AI</td><td>httpx</td><td>调用外部大模型接口</td></tr>
     </tbody>
   </table>

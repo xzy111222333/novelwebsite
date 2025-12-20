@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
-from sqlalchemy.pool import StaticPool
 
 from .config import get_settings
 
@@ -9,15 +8,7 @@ settings = get_settings()
 
 def _build_engine(database_url: str):
     if database_url.startswith("sqlite"):
-        connect_args = {"check_same_thread": False}
-        if database_url in {"sqlite://", "sqlite:///:memory:"}:
-            return create_engine(
-                database_url,
-                connect_args=connect_args,
-                poolclass=StaticPool,
-            )
-        return create_engine(database_url, connect_args=connect_args, pool_pre_ping=True)
-
+        raise ValueError("SQLite is not supported. Please configure MySQL via DATABASE_URL.")
     return create_engine(database_url, pool_pre_ping=True, pool_recycle=3600)
 
 

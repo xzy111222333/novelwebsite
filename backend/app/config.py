@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     )
 
     app_name: str = "QingXie API"
-    database_url: str = f"sqlite:///{(_BACKEND_DIR / 'app.db').as_posix()}"
+    database_url: str = "mysql+pymysql://root:123456@localhost:3306/aiwrite_db?charset=utf8mb4"
     secret_key: str = "change-me"
     access_token_expire_minutes: int = 60 * 24
     algorithm: str = "HS256"

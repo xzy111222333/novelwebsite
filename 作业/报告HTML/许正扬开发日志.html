@@ -40,7 +40,7 @@
     <tbody>
       <tr><td>Python</td><td>3.10+</td><td>后端运行环境</td></tr>
       <tr><td>Node.js</td><td>18+</td><td>前端运行环境</td></tr>
-      <tr><td>数据库</td><td>SQLite（默认）/ MySQL 8.0（可选）</td><td>SQLite 用于快速验收；MySQL 用于生产模式</td></tr>
+      <tr><td>数据库</td><td>MySQL 8.0</td><td>用于存储用户、作品、章节与设定数据</td></tr>
       <tr><td>接口测试工具</td><td>Postman / Apifox</td><td>用于验证登录、CRUD、AI 等接口</td></tr>
     </tbody>
   </table>
@@ -166,16 +166,13 @@ Body(JSON): {"title":"第1章","content":"正文..."}
     并确认了前端调用路径与参数格式（JSON 或表单）。
   </p>
 
-  <h3>8. 数据库配置与验证（SQLite / MySQL）</h3>
+  <h3>8. 数据库配置与验证（MySQL）</h3>
   <p>
-    为了保证验收现场“随时可跑”，后端默认使用 SQLite：无需安装数据库服务，启动后自动生成 <code>backend/app.db</code> 并创建表结构。
-    在完成主流程验证后，再切换到 MySQL 模式，以满足生产部署场景。两种模式在 ORM 层保持一致，因此切换成本主要在配置与连接验证。
+    本项目数据库统一使用 MySQL。为了保证后端启动后可直接建表并写入数据，需要提前创建数据库并配置 <code>DATABASE_URL</code>，
+    同时确保数据库账号具备建表与读写权限。验证方式是：完成配置后启动后端，按“注册→登录→创建作品→创建章节”的流程进行接口自测，
+    并在 MySQL 中确认数据已持久化。
   </p>
-  <p>（1）SQLite 快速验证步骤</p>
-  <pre><code>uvicorn app.main:app --reload --app-dir backend
-GET http://localhost:8000/health
-POST /auth/register → POST /auth/login → GET /auth/me</code></pre>
-  <p>（2）MySQL 模式验证步骤（示例）</p>
+  <p>（1）MySQL 模式验证步骤（示例）</p>
   <pre><code># 创建库（在 MySQL 控制台执行）
 CREATE DATABASE aiwrite_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -184,7 +181,7 @@ DATABASE_URL=mysql+pymysql://aiwrite_user:123456@localhost:3306/aiwrite_db?chars
   <p>
     切换后重启后端，重复“注册/登录/创建作品/创建章节”流程，确认数据写入 MySQL 并可持久化。
   </p>
-  <div class="note">截图建议：图8（MySQL 创建库截图或控制台截图 + 后端切换配置截图）。</div>
+  <div class="note">截图建议：图8（MySQL 创建库截图或控制台截图 + backend/.env 配置截图）。</div>
 
   <h3>9. 关键文件与模块定位（便于老师查阅代码）</h3>
   <p>

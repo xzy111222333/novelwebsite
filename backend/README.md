@@ -19,7 +19,7 @@ DOUBAO_API_URL=https://ark.cn-beijing.volces.com/api/v3/chat/completions
 DOUBAO_MODEL=doubao-seed-1-6-flash-250828
 ```
 
-不配置 `DATABASE_URL` 时会使用 SQLite（默认文件：`backend/app.db`）。
+提示：请先在 MySQL 中创建数据库 `aiwrite_db`，并确保 `DATABASE_URL` 的账号拥有建表权限。
 
 2) 安装依赖并启动
 
@@ -39,6 +39,13 @@ uvicorn app.main:app --reload --app-dir backend
 - `GET/POST/PUT/DELETE /novels/{novel_id}/outlines` 大纲 CRUD
 - `GET/PUT/DELETE /novels/{novel_id}/world-building` 世界观（Upsert）
 - `POST /ai/continue-writing` AI 续写（需要 `DOUBAO_API_KEY`）
+- `POST /ai/refine` AI 润色/扩写
+- `POST /ai/review` AI 审稿报告
+- `POST /ai/deconstruct` AI 拆书解析
+- `POST /ai/naming` AI 起名
+- `POST /ai/generate-outline` AI 生成大纲
+- `POST /ai/generate-character` AI 生成角色设定
+- `POST /ai/generate-world` AI 生成世界观设定
+- `POST /ai/generate-draft` AI 生成章节草稿
 
 健康检查：`GET /health`
-
