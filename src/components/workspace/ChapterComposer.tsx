@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils'
 interface ChapterComposerProps {
   novelId?: string
   chapterId?: string
+  reloadToken?: number
   onSaved?: () => void
 }
 
@@ -28,7 +29,7 @@ interface ChapterPayload {
   status: string
 }
 
-export function ChapterComposer({ novelId, chapterId, onSaved }: ChapterComposerProps) {
+export function ChapterComposer({ novelId, chapterId, reloadToken, onSaved }: ChapterComposerProps) {
   const { toast } = useToast()
   const [chapter, setChapter] = useState<ChapterPayload | null>(null)
   const [content, setContent] = useState('')
@@ -81,7 +82,7 @@ export function ChapterComposer({ novelId, chapterId, onSaved }: ChapterComposer
     }
 
     loadChapter()
-  }, [chapterId, toast])
+  }, [chapterId, reloadToken, toast])
 
   const handleSave = async () => {
     if (!chapterId) {

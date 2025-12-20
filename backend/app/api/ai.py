@@ -10,11 +10,74 @@ from ..services.ai_service import WRITING_SYSTEM_PROMPT, doubao_chat, extract_co
 router = APIRouter(prefix="/ai", tags=["ai"])
 
 
-def _parse_json_from_ai(text: str):
+def _strip_code_fences(text: str) -> str:
     cleaned = text.strip()
-    cleaned = re.sub(r"^```(?:json)?\\s*", "", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\\s*```$", "", cleaned)
-    return json.loads(cleaned)
+    cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\s*```$", "", cleaned)
+    return cleaned.strip()
+
+
+def _extract_json_object(text: str) -> str:
+    start = text.find("{")
+    end = text.rfind("}")
+    if start == -1 or end == -1 or end <= start:
+        return text
+    return text[start : end + 1]
+
+
+def _escape_control_chars_in_json_strings(text: str) -> str:
+    out: list[str] = []
+    in_string = False
+    escaped = False
+
+    for ch in text:
+        if not in_string:
+            out.append(ch)
+            if ch == '"':
+                in_string = True
+            continue
+
+        if escaped:
+            out.append(ch)
+            escaped = False
+            continue
+
+        if ch == "\\":
+            out.append(ch)
+            escaped = True
+            continue
+
+        if ch == '"':
+            out.append(ch)
+            in_string = False
+            continue
+
+        code = ord(ch)
+        if code < 0x20:
+            if ch == "\n":
+                out.append("\\n")
+            elif ch == "\r":
+                out.append("\\r")
+            elif ch == "\t":
+                out.append("\\t")
+            else:
+                out.append(f"\\u{code:04x}")
+            continue
+
+        out.append(ch)
+
+    return "".join(out)
+
+
+def _parse_json_from_ai(text: str):
+    cleaned = _extract_json_object(_strip_code_fences(text))
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        try:
+            return json.loads(cleaned, strict=False)
+        except json.JSONDecodeError:
+            return json.loads(_escape_control_chars_in_json_strings(cleaned))
 
 
 @router.post("/chat", response_model=schemas.AIChatResponse)
