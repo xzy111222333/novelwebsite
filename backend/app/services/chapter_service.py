@@ -95,3 +95,29 @@ def delete_chapter(db: Session, novel: Novel, chapter: Chapter) -> None:
     _recalculate_novel_stats(db, novel)
     db.commit()
     db.refresh(novel)
+
+
+def reorder_chapters(db: Session, user_id: str, novel: Novel, chapter_ids: list[str]) -> None:
+    if novel.user_id != user_id:
+        raise ValueError("Forbidden")
+
+    clean_ids = [cid for cid in chapter_ids if cid and str(cid).strip()]
+    if not clean_ids:
+        raise ValueError("chapter_ids 不能为空")
+
+    rows = (
+        db.query(Chapter)
+        .join(Novel, Novel.id == Chapter.novel_id)
+        .filter(Chapter.novel_id == novel.id, Novel.user_id == user_id, Chapter.id.in_(clean_ids))
+        .all()
+    )
+
+    by_id = {c.id: c for c in rows}
+    if len(by_id) != len(set(clean_ids)):
+        raise ValueError("chapter_ids 包含不存在或不属于当前作品的章节")
+
+    for idx, cid in enumerate(clean_ids, start=1):
+        by_id[cid].order = idx
+        db.add(by_id[cid])
+
+    db.commit()

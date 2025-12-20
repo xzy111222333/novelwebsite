@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import { Copy, Loader2, Wand2, RefreshCw, Sparkles, Upload } from 'lucide-react'
@@ -262,7 +261,6 @@ export function AiRefinePanel({ chapterId, onChapterUpdated }: AiRefinePanelProp
                 <Badge variant="outline" className="rounded-full border-2 px-3 py-1 text-xs">
                   AI 优化文本
                 </Badge>
-                <span className="text-xs text-muted-foreground">已根据指定策略完成润色</span>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={handleCopy} className="rounded-xl border-2">
@@ -289,41 +287,9 @@ export function AiRefinePanel({ chapterId, onChapterUpdated }: AiRefinePanelProp
                 </Button>
               </div>
             </div>
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
-              <ScrollArea className="max-h-[400px] rounded-2xl border border-border/70 bg-card/70 p-4">
-                <pre className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{result.refined}</pre>
-              </ScrollArea>
-              <div className="space-y-3 rounded-2xl border border-border/70 bg-background/70 p-4">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.2em]">
-                  优化说明
-                </p>
-                <Separator />
-                <ul className="space-y-2 text-xs leading-5 text-muted-foreground">
-                  {result.notes && result.notes.length > 0 ? (
-                    result.notes.map((note, index) => (
-                      <li key={index} className="flex gap-2">
-                        <span className="mt-0.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary" />
-                        <span>{note}</span>
-                      </li>
-                    ))
-                  ) : (
-                    <>
-                      <li className="flex gap-2">
-                        <span className="mt-0.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary" />
-                        <span>已根据选择的重点优化叙事节奏与情感力度。</span>
-                      </li>
-                      <li className="flex gap-2">
-                        <span className="mt-0.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary" />
-                        <span>如需追加特定细节，可在说明中进一步限制写法。</span>
-                      </li>
-                    </>
-                  )}
-                </ul>
-                <div className="rounded-xl border border-dashed border-border/60 p-3 text-[11px] leading-5 text-muted-foreground">
-                  提示：润色后的文本会保持语义一致。如需大幅改写，可选择「扩写细节」并描述新的剧情方向。
-                </div>
-              </div>
-            </div>
+            <ScrollArea className="max-h-[520px] rounded-2xl border border-border/70 bg-card/70 p-4">
+              <pre className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{result.refined}</pre>
+            </ScrollArea>
           </div>
         )}
       </CardContent>

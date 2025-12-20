@@ -1,6 +1,6 @@
 from .user import UserCreate, UserLogin, UserResponse, Token, TokenData
 from .novel import NovelCreate, NovelResponse, NovelUpdate
-from .chapter import ChapterCreate, ChapterResponse, ChapterUpdate
+from .chapter import ChapterCreate, ChapterResponse, ChapterUpdate, ChapterReorderRequest, ChapterReorderResponse
 from .character import CharacterCreate, CharacterResponse, CharacterUpdate
 from .outline import OutlineCreate, OutlineResponse, OutlineUpdate
 from .world_building import WorldBuildingResponse, WorldBuildingUpsert
@@ -45,6 +45,8 @@ __all__ = [
     "ChapterCreate",
     "ChapterResponse",
     "ChapterUpdate",
+    "ChapterReorderRequest",
+    "ChapterReorderResponse",
     "CharacterCreate",
     "CharacterResponse",
     "CharacterUpdate",

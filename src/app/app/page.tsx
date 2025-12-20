@@ -562,7 +562,7 @@ const fetchNovels = useCallback(async () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chapterIds }),
         })
-        const data = await response.json()
+        const data = await response.json().catch(() => ({}))
         if (!data.success) {
           toast({ description: data.error || '章节排序更新失败', variant: 'destructive' })
           return

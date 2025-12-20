@@ -34,3 +34,10 @@ class ChapterResponse(ChapterBase):
     class Config:
         from_attributes = True
 
+
+class ChapterReorderRequest(BaseModel):
+    chapter_ids: list[str]
+
+
+class ChapterReorderResponse(BaseModel):
+    success: bool = True
