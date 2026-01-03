@@ -21,6 +21,8 @@ class UserLogin(BaseModel):
 
 class UserResponse(UserBase):
     id: str
+    is_admin: bool = False
+    is_banned: bool = False
     created_at: datetime
     updated_at: datetime
 

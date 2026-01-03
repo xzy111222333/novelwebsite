@@ -8,7 +8,12 @@ from ..utils.security import generate_uuid
 
 
 def list_novels(db: Session, user_id: str) -> List[Novel]:
-    return db.query(Novel).filter(Novel.user_id == user_id).order_by(Novel.created_at.desc()).all()
+    return (
+        db.query(Novel)
+        .filter(Novel.user_id == user_id, Novel.is_banned == False)
+        .order_by(Novel.created_at.desc())
+        .all()
+    )
 
 
 def create_novel(db: Session, user_id: str, novel_in: NovelCreate) -> Novel:
@@ -28,7 +33,11 @@ def create_novel(db: Session, user_id: str, novel_in: NovelCreate) -> Novel:
 
 
 def get_novel(db: Session, novel_id: str, user_id: str) -> Optional[Novel]:
-    return db.query(Novel).filter(Novel.id == novel_id, Novel.user_id == user_id).first()
+    return (
+        db.query(Novel)
+        .filter(Novel.id == novel_id, Novel.user_id == user_id, Novel.is_banned == False)
+        .first()
+    )
 
 
 def update_novel(db: Session, novel: Novel, novel_in: NovelUpdate) -> Novel:

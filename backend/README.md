@@ -49,3 +49,26 @@ uvicorn app.main:app --reload --app-dir backend
 - `POST /ai/generate-draft` AI 生成章节草稿
 
 健康检查：`GET /health`
+
+## Admin setup
+
+Manual database changes are required for admin and ban support.
+
+```sql
+ALTER TABLE users ADD COLUMN is_admin TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE users ADD COLUMN is_banned TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE novels ADD COLUMN is_banned TINYINT(1) NOT NULL DEFAULT 0;
+```
+
+Mark a user as admin:
+
+```sql
+UPDATE users SET is_admin = 1 WHERE email = 'admin@example.com';
+```
+
+Ban or unban:
+
+```sql
+UPDATE users SET is_banned = 1 WHERE email = 'user@example.com';
+UPDATE novels SET is_banned = 1 WHERE id = 'novel-id';
+```

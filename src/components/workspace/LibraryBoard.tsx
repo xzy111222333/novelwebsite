@@ -69,7 +69,7 @@ export function LibraryBoard({ novels, onSelect, onCreate, onRename, onDelete }:
   }, [novels, search, statusFilter])
 
   return (
-    <div className="flex h-full flex-col bg-gradient-to-br from-white via-slate-50/30 to-teal-50/10">
+    <div className="flex h-full w-full flex-1 flex-col bg-gradient-to-br from-white via-slate-50/30 to-teal-50/10">
       <header className="border-b border-border/40 bg-white/80 backdrop-blur-xl p-8 shadow-soft">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">
@@ -121,7 +121,7 @@ export function LibraryBoard({ novels, onSelect, onCreate, onRename, onDelete }:
 
       <ScrollArea className="flex-1">
         <div className={cn(
-          'mx-auto w-full max-w-6xl gap-5 px-8 py-8',
+          'w-full gap-5 px-8 py-8',
           layout === 'grid' ? 'grid md:grid-cols-2 xl:grid-cols-3' : 'space-y-4'
         )}>
           {filteredNovels.map((novel) => (

@@ -11,7 +11,7 @@ def list_characters(db: Session, user_id: str, novel_id: str) -> List[Character]
     return (
         db.query(Character)
         .join(Novel, Novel.id == Character.novel_id)
-        .filter(Character.novel_id == novel_id, Novel.user_id == user_id)
+        .filter(Character.novel_id == novel_id, Novel.user_id == user_id, Novel.is_banned == False)
         .order_by(Character.created_at.desc())
         .all()
     )
@@ -21,7 +21,7 @@ def get_character(db: Session, user_id: str, character_id: str) -> Optional[Char
     return (
         db.query(Character)
         .join(Novel, Novel.id == Character.novel_id)
-        .filter(Character.id == character_id, Novel.user_id == user_id)
+        .filter(Character.id == character_id, Novel.user_id == user_id, Novel.is_banned == False)
         .first()
     )
 

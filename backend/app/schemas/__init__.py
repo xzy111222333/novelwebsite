@@ -32,6 +32,7 @@ from .ai import (
     GenerateDraftResponse,
     GenerateDraftMetadata,
 )
+from .admin import AdminUserResponse, AdminUserUpdate, AdminNovelResponse, AdminNovelUpdate
 
 __all__ = [
     "UserCreate",
@@ -81,4 +82,8 @@ __all__ = [
     "GenerateDraftRequest",
     "GenerateDraftResponse",
     "GenerateDraftMetadata",
+    "AdminUserResponse",
+    "AdminUserUpdate",
+    "AdminNovelResponse",
+    "AdminNovelUpdate",
 ]

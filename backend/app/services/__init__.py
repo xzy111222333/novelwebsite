@@ -10,6 +10,14 @@ from .world_building_service import (
     list_world_buildings,
     upsert_world_building,
 )
+from .admin_service import (
+    list_admin_users,
+    get_admin_user,
+    update_admin_user,
+    list_admin_novels,
+    get_admin_novel,
+    update_admin_novel,
+)
 
 __all__ = [
     "authenticate_user",
@@ -41,4 +49,10 @@ __all__ = [
     "get_world_building_by_id",
     "list_world_buildings",
     "upsert_world_building",
+    "list_admin_users",
+    "get_admin_user",
+    "update_admin_user",
+    "list_admin_novels",
+    "get_admin_novel",
+    "update_admin_novel",
 ]

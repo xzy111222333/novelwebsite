@@ -12,7 +12,7 @@ def list_outlines(db: Session, user_id: str, novel_id: str) -> List[Outline]:
     return (
         db.query(Outline)
         .join(Novel, Novel.id == Outline.novel_id)
-        .filter(Outline.novel_id == novel_id, Novel.user_id == user_id)
+        .filter(Outline.novel_id == novel_id, Novel.user_id == user_id, Novel.is_banned == False)
         .order_by(Outline.order.asc(), Outline.created_at.asc())
         .all()
     )
@@ -22,7 +22,7 @@ def get_outline(db: Session, user_id: str, outline_id: str) -> Optional[Outline]
     return (
         db.query(Outline)
         .join(Novel, Novel.id == Outline.novel_id)
-        .filter(Outline.id == outline_id, Novel.user_id == user_id)
+        .filter(Outline.id == outline_id, Novel.user_id == user_id, Novel.is_banned == False)
         .first()
     )
 

@@ -16,4 +16,13 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
     user = db.query(User).filter(User.id == token_data.user_id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    if user.is_banned:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is banned")
+    return user
+
+
+def get_current_admin(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)) -> User:
+    user = get_current_user(db=db, token=token)
+    if not user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return user

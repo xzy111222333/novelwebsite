@@ -11,7 +11,7 @@ def get_world_building(db: Session, user_id: str, novel_id: str) -> Optional[Wor
     return (
         db.query(WorldBuilding)
         .join(Novel, Novel.id == WorldBuilding.novel_id)
-        .filter(WorldBuilding.novel_id == novel_id, Novel.user_id == user_id)
+        .filter(WorldBuilding.novel_id == novel_id, Novel.user_id == user_id, Novel.is_banned == False)
         .first()
     )
 
@@ -49,7 +49,11 @@ def delete_world_building(db: Session, world_building: WorldBuilding) -> None:
 
 
 def list_world_buildings(db: Session, user_id: str, novel_id: str | None = None) -> List[WorldBuilding]:
-    query = db.query(WorldBuilding).join(Novel, Novel.id == WorldBuilding.novel_id).filter(Novel.user_id == user_id)
+    query = (
+        db.query(WorldBuilding)
+        .join(Novel, Novel.id == WorldBuilding.novel_id)
+        .filter(Novel.user_id == user_id, Novel.is_banned == False)
+    )
     if novel_id:
         query = query.filter(WorldBuilding.novel_id == novel_id)
     return query.order_by(WorldBuilding.created_at.desc()).all()
@@ -59,6 +63,6 @@ def get_world_building_by_id(db: Session, user_id: str, world_building_id: str) 
     return (
         db.query(WorldBuilding)
         .join(Novel, Novel.id == WorldBuilding.novel_id)
-        .filter(WorldBuilding.id == world_building_id, Novel.user_id == user_id)
+        .filter(WorldBuilding.id == world_building_id, Novel.user_id == user_id, Novel.is_banned == False)
         .first()
     )

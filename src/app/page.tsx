@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,6 +20,8 @@ import {
 import { cn } from '@/lib/utils'
 
 export default function HomePage() {
+  const { data: session } = useSession()
+  const router = useRouter()
   const [scrollY, setScrollY] = useState(0)
 
   useEffect(() => {
@@ -25,6 +29,12 @@ export default function HomePage() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+    if (session?.user?.isAdmin) {
+      router.replace('/admin')
+    }
+  }, [router, session?.user?.isAdmin])
 
   const coreFeatures = [
     {

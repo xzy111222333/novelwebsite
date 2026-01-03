@@ -11,11 +11,15 @@ declare module "next-auth" {
     name?: string | null
     avatar?: string | null
     accessToken?: string
+    isAdmin?: boolean
+    isBanned?: boolean
   }
 
   interface Session {
     user: User
     accessToken?: string
+    isAdmin?: boolean
+    isBanned?: boolean
   }
 }
 
@@ -23,6 +27,8 @@ declare module "next-auth/jwt" {
   interface JWT {
     uid: string
     accessToken?: string
+    isAdmin?: boolean
+    isBanned?: boolean
   }
 }
 
@@ -77,6 +83,8 @@ export const authOptions: NextAuthOptions = {
             email: string
             name?: string | null
             avatar?: string | null
+            is_admin?: boolean
+            is_banned?: boolean
           }
 
           return {
@@ -85,6 +93,8 @@ export const authOptions: NextAuthOptions = {
             name: me.name ?? null,
             avatar: me.avatar ?? null,
             accessToken,
+            isAdmin: Boolean(me.is_admin),
+            isBanned: Boolean(me.is_banned),
           }
         } catch (error) {
           console.error("认证错误:", error)
@@ -99,12 +109,18 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.sub
       }
       session.accessToken = token.accessToken
+      session.user.isAdmin = token.isAdmin
+      session.user.isBanned = token.isBanned
+      session.isAdmin = token.isAdmin
+      session.isBanned = token.isBanned
       return session
     },
     jwt: async ({ user, token }) => {
       if (user) {
         token.uid = user.id
         token.accessToken = (user as any).accessToken
+        token.isAdmin = (user as any).isAdmin
+        token.isBanned = (user as any).isBanned
       }
       return token
     },

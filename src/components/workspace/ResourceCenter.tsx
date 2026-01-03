@@ -29,7 +29,7 @@ export function ResourceCenter({
   onOpenTool
 }: ResourceCenterProps) {
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-gradient-to-br from-white via-slate-50/30 to-teal-50/10">
+    <div className="flex h-full w-full flex-1 flex-col overflow-hidden bg-gradient-to-br from-white via-slate-50/30 to-teal-50/10">
       <header className="border-b border-border/40 bg-white/80 backdrop-blur-xl px-8 py-6 shadow-soft">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-3">
@@ -67,7 +67,7 @@ export function ResourceCenter({
               <Button variant="outline" size="sm" onClick={() => onOpenTool('character')} className="rounded-xl border-2 hover-glow font-semibold">
                 <Sparkles className="mr-2 h-4 w-4" /> 角色设定
               </Button>
-              <Button variant="outline" size="sm" onClick={() => onOpenTool('more')} className="rounded-xl border-2 hover-glow font-semibold">
+              <Button variant="outline" size="sm" onClick={() => onOpenTool('world')} className="rounded-xl border-2 hover-glow font-semibold">
                 <BookMarked className="mr-2 h-4 w-4" /> 世界观工具
               </Button>
             </div>
@@ -76,7 +76,7 @@ export function ResourceCenter({
       </header>
 
       <main className="flex-1 overflow-y-auto px-6 py-8">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+        <div className="flex w-full flex-col gap-6">
           {novelDetail ? (
             <NovelOverview novel={novelDetail} />
           ) : (

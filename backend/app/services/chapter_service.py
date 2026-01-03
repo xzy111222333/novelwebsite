@@ -24,7 +24,7 @@ def list_chapters(db: Session, user_id: str, novel_id: str) -> List[Chapter]:
     return (
         db.query(Chapter)
         .join(Novel, Novel.id == Chapter.novel_id)
-        .filter(Chapter.novel_id == novel_id, Novel.user_id == user_id)
+        .filter(Chapter.novel_id == novel_id, Novel.user_id == user_id, Novel.is_banned == False)
         .order_by(Chapter.order.asc(), Chapter.created_at.asc())
         .all()
     )
@@ -34,7 +34,7 @@ def get_chapter(db: Session, user_id: str, chapter_id: str) -> Optional[Chapter]
     return (
         db.query(Chapter)
         .join(Novel, Novel.id == Chapter.novel_id)
-        .filter(Chapter.id == chapter_id, Novel.user_id == user_id)
+        .filter(Chapter.id == chapter_id, Novel.user_id == user_id, Novel.is_banned == False)
         .first()
     )
 

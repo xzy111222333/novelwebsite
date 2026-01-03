@@ -1,6 +1,7 @@
 'use client'
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
+import { signOut, useSession } from 'next-auth/react'
 import {
   ChapterComposer,
   CharacterStudio,
@@ -31,7 +33,6 @@ import {
   AiDeconstructPanel,
   AiNamingPanel,
   AiReviewPanel,
-  AiToolkitPanel,
 } from '@/components/workspace'
 import { Reorder } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
@@ -50,8 +51,9 @@ import {
   PenSquare,
   Plus,
   Sparkles,
-  Stars,
+  LogOut,
   Type,
+  User,
   Users,
 } from 'lucide-react'
 
@@ -65,7 +67,6 @@ type AssistantTool =
   | 'character'
   | 'naming'
   | 'review'
-  | 'more'
 
 interface NavigationItem {
   id: NavView
@@ -143,12 +144,6 @@ const TOOL_DEFINITIONS: ToolDefinition[] = [
     description: '智能审稿与优化建议',
     requireNovel: true,
   },
-  {
-    id: 'more',
-    label: '更多AI工具',
-    icon: Stars,
-    description: '探索更多创作辅助功能',
-  },
 ]
 
 const GENRE_PRESETS = ['奇幻玄幻', '都市言情', '科幻未来', '历史穿越', '悬疑推理', '轻松日常']
@@ -209,6 +204,8 @@ interface ChapterCreationPayload {
 }
 
 export default function AppPage() {
+  const { data: session } = useSession()
+  const router = useRouter()
   const [navView, setNavView] = useState<NavView>('workspace')
   const [assistantTool, setAssistantTool] = useState<AssistantTool | null>(null)
 
@@ -223,6 +220,7 @@ export default function AppPage() {
   const [novelDialogOpen, setNovelDialogOpen] = useState(false)
   const [chapterDialogOpen, setChapterDialogOpen] = useState(false)
   const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false)
+  const [userDialogOpen, setUserDialogOpen] = useState(false)
 
   const [exporting, setExporting] = useState(false)
   const [creatingNovel, setCreatingNovel] = useState(false)
@@ -329,6 +327,12 @@ const fetchNovels = useCallback(async () => {
   useEffect(() => {
     void fetchNovels()
   }, [fetchNovels])
+
+  useEffect(() => {
+    if (session?.user?.isAdmin) {
+      router.replace('/admin')
+    }
+  }, [router, session?.user?.isAdmin])
 
   useEffect(() => {
     if (!selectedNovelId) {
@@ -681,19 +685,6 @@ const fetchNovels = useCallback(async () => {
         return <AiNamingPanel novelId={selectedNovelId} />
       case 'review':
         return <AiReviewPanel chapterId={selectedChapterId} />
-      case 'more':
-        return (
-          <AiToolkitPanel
-            novelId={selectedNovelId}
-            onSelectTool={(tool) => setAssistantTool(tool as AssistantTool)}
-            onNavigate={(view) => {
-              setNavView(view)
-              if (view !== 'workspace') {
-                setAssistantTool(null)
-              }
-            }}
-          />
-        )
       default:
         return null
     }
@@ -880,10 +871,26 @@ const fetchNovels = useCallback(async () => {
                         点击下方工具条可唤起不同的 AI 助手。默认保留一整块清爽的创作区域，专注于当前章节的内容。
                       </p>
                     </div>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <Button
-                        variant="outline"
-                        onClick={() => exportNovel('text')}
+                      <div className="flex flex-wrap items-center gap-3">
+                        <Button
+                          variant="outline"
+                          onClick={() => setUserDialogOpen(true)}
+                          className="rounded-xl border-2 hover-glow font-semibold"
+                        >
+                          <User className="mr-2 h-4 w-4" />
+                          用户信息
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                          className="rounded-xl border-2 hover-glow font-semibold"
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          退出登录
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => exportNovel('text')}
                         disabled={!fullNovel || exporting}
                         className="rounded-xl border-2 hover-glow font-semibold"
                       >
@@ -1194,6 +1201,58 @@ const fetchNovels = useCallback(async () => {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={userDialogOpen} onOpenChange={setUserDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>用户信息</DialogTitle>
+            <DialogDescription>查看当前登录账号信息</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              {session?.user?.avatar ? (
+                <img
+                  src={session.user.avatar}
+                  alt={session.user.name || session.user.email}
+                  className="h-14 w-14 rounded-full object-cover border border-border/60"
+                />
+              ) : (
+                <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                  {session?.user?.email?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+              )}
+              <div>
+                <p className="text-base font-semibold text-foreground">
+                  {session?.user?.name || '未设置昵称'}
+                </p>
+                <p className="text-sm text-muted-foreground">{session?.user?.email || '-'}</p>
+              </div>
+            </div>
+            <div className="grid gap-3">
+              <div className="flex items-center justify-between rounded-xl border border-border/60 p-3">
+                <span className="text-sm text-muted-foreground">管理员</span>
+                <span className="text-sm font-semibold">
+                  {session?.user?.isAdmin ? '是' : '否'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between rounded-xl border border-border/60 p-3">
+                <span className="text-sm text-muted-foreground">状态</span>
+                <span className="text-sm font-semibold">
+                  {session?.user?.isBanned ? '已封禁' : '正常'}
+                </span>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setUserDialogOpen(false)}>
+                关闭
+              </Button>
+              <Button onClick={() => signOut({ callbackUrl: '/auth/signin' })}>
+                退出登录
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 

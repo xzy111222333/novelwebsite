@@ -1,12 +1,13 @@
-// lib/session.ts
+﻿// lib/session.ts
 import { getServerSession } from "next-auth"
 import { authOptions } from "./auth"
 
 export class AuthError extends Error {
   statusCode = 401
-  constructor(message = "未授权访问") {
+  constructor(message = "Unauthorized", statusCode = 401) {
     super(message)
     this.name = "AuthError"
+    this.statusCode = statusCode
   }
 }
 
@@ -20,15 +21,25 @@ export async function getCurrentUser() {
   return {
     ...session.user,
     accessToken: session.accessToken,
-  } as { id: string; email: string; name?: string; accessToken?: string }
+    isAdmin: session.user.isAdmin,
+    isBanned: session.user.isBanned,
+  } as { id: string; email: string; name?: string; accessToken?: string; isAdmin?: boolean; isBanned?: boolean }
 }
 
 export async function requireAuth() {
   const user = await getCurrentUser()
-  
+
   if (!user || !user.accessToken) {
     throw new AuthError()
   }
-  
+
+  return user
+}
+
+export async function requireAdmin() {
+  const user = await requireAuth()
+  if (!user.isAdmin) {
+    throw new AuthError("Admin access required", 403)
+  }
   return user
 }

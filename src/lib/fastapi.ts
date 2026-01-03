@@ -32,6 +32,7 @@ export function toCamelNovel(novel: any) {
     genre: novel.genre ?? null,
     status: novel.status ?? "draft",
     coverImage: novel.cover_image ?? null,
+    isBanned: Boolean(novel.is_banned),
     tags: typeof novel.tags === "string" && novel.tags ? safeJsonParse(novel.tags, []) : [],
     wordCount: novel.word_count ?? 0,
     chapterCount: novel.chapter_count ?? 0,

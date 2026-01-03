@@ -29,6 +29,7 @@ class NovelResponse(NovelBase):
     cover_image: Optional[str] = None
     word_count: int
     chapter_count: int
+    is_banned: bool = False
     user_id: str
     created_at: datetime
     updated_at: datetime
